@@ -5,34 +5,24 @@ import {Repository} from 'typeorm';
 import CreateEventDTO from './createEvent.dto';
 import { JoiValidationPipe } from './JoiValidationPipe';
 import {validateEvent} from './event.validate';
+import {EventService} from './event.service';
 
 @Controller('event')
 export class EventController {
     constructor(
         @InjectRepository(Event)
-        private readonly eventRep: Repository<Event>
+        private readonly eventRep: Repository<Event>,
+        private eventService: EventService
     ){}
 
     @Get()
     async getAll(): Promise<Event[]>{
-        const events: Event[] = await await this.eventRep.find();
-
-        if (!events) {
-            throw new NotFoundException();
-        }
-
-        return events;
+        return await this.eventService.getAll(this.eventRep);
     }
 
     @Get(':id')
     async getById(@Param('id', ParseIntPipe) id: number): Promise<Event>{
-        const event: Event | null = await this.eventRep.findOneBy({id: id});
-
-        if (!event) {
-            throw new NotFoundException();
-        }
-
-        return event;
+        return await this.eventService.findById(this.eventRep, id);
     }
 
     @Post()
@@ -44,26 +34,14 @@ export class EventController {
     @Patch(':id')
     @UsePipes(new JoiValidationPipe(validateEvent))
     async edit(@Body() input: CreateEventDTO, @Param('id', ParseIntPipe) id: number): Promise<Event>{
-        const event: Event | null = await this.eventRep.findOneBy({id: id});
-
-        if (!event) {
-            throw new NotFoundException();
-        }
-
         return await this.eventRep.save({
-            ...event,
+            ...(await this.eventService.findById(this.eventRep, id)),
             ...input
         });
     }
 
     @Delete(':id')
     async remove(@Param('id', ParseIntPipe) id: number): Promise<Event>{
-        const event: Event | null = await this.eventRep.findOneBy({id: id});
-
-        if (!event) {
-            throw new NotFoundException();
-        }
-
-        return await this.eventRep.remove(event);
+        return await this.eventRep.remove(await this.eventService.findById(this.eventRep, id));
     }
 }
