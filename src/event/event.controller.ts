@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotFoundException, Param, ParseIntPipe, Post, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Post, UsePipes } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Event from './Event.entity';
 import {Repository} from 'typeorm';
@@ -39,5 +39,31 @@ export class EventController {
     @UsePipes(new JoiValidationPipe(validateEvent))
     async create(@Body() input: CreateEventDTO):Promise<Event>{
         return await this.eventRep.save({...input});
+    }
+
+    @Patch(':id')
+    @UsePipes(new JoiValidationPipe(validateEvent))
+    async edit(@Body() input: CreateEventDTO, @Param('id', ParseIntPipe) id: number): Promise<Event>{
+        const event: Event | null = await this.eventRep.findOneBy({id: id});
+
+        if (!event) {
+            throw new NotFoundException();
+        }
+
+        return await this.eventRep.save({
+            ...event,
+            ...input
+        });
+    }
+
+    @Delete(':id')
+    async remove(@Param('id', ParseIntPipe) id: number): Promise<Event>{
+        const event: Event | null = await this.eventRep.findOneBy({id: id});
+
+        if (!event) {
+            throw new NotFoundException();
+        }
+
+        return await this.eventRep.remove(event);
     }
 }
