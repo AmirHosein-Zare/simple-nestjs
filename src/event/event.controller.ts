@@ -1,8 +1,10 @@
-import { Body, Controller, Get, NotFoundException, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, ParseIntPipe, Post, UsePipes } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Event from './Event.entity';
 import {Repository} from 'typeorm';
 import CreateEventDTO from './createEvent.dto';
+import { JoiValidationPipe } from './JoiValidationPipe';
+import {validateEvent} from './event.validate';
 
 @Controller('event')
 export class EventController {
@@ -34,6 +36,7 @@ export class EventController {
     }
 
     @Post()
+    @UsePipes(new JoiValidationPipe(validateEvent))
     async create(@Body() input: CreateEventDTO):Promise<Event>{
         return await this.eventRep.save({...input});
     }
