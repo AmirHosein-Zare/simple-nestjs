@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany} from 'typeorm';
 import Profile from '../profile/Profile.entity';
+import Photo from '../photo/Photo.entity';
 
 @Entity()
 export default class Event{
@@ -12,4 +13,7 @@ export default class Event{
     @OneToOne(()=>Profile, (profile) => profile.user)
     @JoinColumn()
     profile: Profile;
+
+    @OneToMany(()=> Photo, (photo)=>photo.user)
+    photos: Photo[]
 }

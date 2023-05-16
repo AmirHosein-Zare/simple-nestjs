@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { ProfileModule } from './profile/profile.module';
+import { PhotoModule } from './photo/photo.module';
 import ormConfig from './config/orm.config';
 
 @Module({
@@ -20,7 +21,8 @@ import ormConfig from './config/orm.config';
     }),
     EventModule,
     UserModule,
-    ProfileModule
+    ProfileModule,
+    PhotoModule
 ],
   controllers: [AppController, EventController],
   providers: [AppService],
