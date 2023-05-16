@@ -5,6 +5,8 @@ import { EventController } from './event/event.controller';
 import { EventModule } from './event/event.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './user/user.module';
+import { ProfileModule } from './profile/profile.module';
 import ormConfig from './config/orm.config';
 
 @Module({
@@ -16,7 +18,9 @@ import ormConfig from './config/orm.config';
     TypeOrmModule.forRootAsync({
       useFactory: ormConfig
     }),
-    EventModule
+    EventModule,
+    UserModule,
+    ProfileModule
 ],
   controllers: [AppController, EventController],
   providers: [AppService],
